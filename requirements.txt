@@ -4,6 +4,7 @@ sentence-transformers
 langchain
 langchain_community
 bs4
+streamlit
 faiss-cpu
 faiss-gpu
 spacy
