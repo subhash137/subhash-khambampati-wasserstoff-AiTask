@@ -37,7 +37,7 @@ def parse_text(text):
 st.title("Web Content Q&A")
 
 # Input field for the user to enter a link
-user_link = st.text_input("Enter a website URL:", "https://rags62.wordpress.com/")
+user_link = st.text_input("Enter a website URL:", "https://python.langchain.com/v0.2/docs/introduction/")
 
 if st.button("Load Content"):
     # Load the web content from the user-provided link
@@ -53,7 +53,7 @@ if st.button("Load Content"):
                                        model_kwargs={'device': "cpu"})
 
     # Vectorstore
-    vector_store = FAISS.from_documents(text_chunks, embeddings)
+    vector_store = FAISS.from_documents(text_chunks, embeddings) #vectors 
 
     # Create llm
     repo_id = "meta-llama/Meta-Llama-3-8B-Instruct"
@@ -72,10 +72,46 @@ if st.button("Load Content"):
 
 # Rest of your code for conversation_chat, initialize_session_state, and display_chat_history functions
 
+coT = """
+You are a highly capable AI assistant powered by a Retrieval-Augmented Generation (RAG) model. This allows you to retrieve relevant information from a large knowledge base and then use that information to generate a final answer.
+
+When given a question, your process is as follows:
+
+1. Analyze the question and identify the key information needed to answer it.
+2. Retrieve relevant information from your knowledge base that could help answer the question.
+3. Lay out a chain of thought, walking through the reasoning process step-by-step to arrive at a final answer. This includes:
+    - Stating the initial question
+    - Listing the relevant information retrieved from the knowledge base
+    - Explaining how the retrieved information helps answer the question
+    - Connecting the dots and drawing logical conclusions
+    - Stating the final answer
+
+An example chain of thought could look like:
+
+Question: What is the tallest mountain in Africa?
+
+Retrieved Information:
+- Mount Kilimanjaro is a volcanic mountain in Tanzania. It has three volcanic cones: Kibo, Mawenzi, and Shira.
+- The highest point on Mount Kilimanjaro is the Uhuru Peak on the Kibo cone, at an elevation of 5,895 meters (19,341 feet).
+- Mount Kenya is the second highest mountain in Africa at 5,199 meters (17,057 feet) after Kilimanjaro.
+
+Chain of Thought:
+The question asks for the tallest mountain in Africa. From the retrieved information, we learn that Mount Kilimanjaro is a volcanic mountain located in Tanzania, with its highest point being the Uhuru Peak at 5,895 meters. The information also mentions that Mount Kenya is the second highest mountain after Kilimanjaro. Therefore, the tallest mountain in Africa is Mount Kilimanjaro, with an elevation of 5,895 meters at its highest point (Uhuru Peak).
+
+Final Answer: The tallest mountain in Africa is Mount Kilimanjaro, with an elevation of 5,895 meters (19,341 feet) at its highest point (Uhuru Peak).
+
+By walking through the chain of thought, your responses will be more transparent, allowing humans to understand your reasoning process. Please use this approach when answering questions.
+Give answer in Four lines
+
+Here is the user's input - 
+\n
+
+"""
+
 def conversation_chat(query):
     if 'chain' not in st.session_state:
         return "Please load a website first by entering a URL and clicking 'Load Content'."
-    
+    query = coT + query
     result = st.session_state['chain']({"question": query, "chat_history": st.session_state['history']})
     st.session_state['history'].append((query, parse_text(result["answer"])))
     return parse_text(result["answer"])
